@@ -8,7 +8,7 @@
 		"build": "tsc -p .",
 		"start": "node build/app.js",
 		"dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node-esm\" src/_test/app/index.ts",
-		"upload": "npm run build && node ./setupPackage.js && cd dist && npm version patch && npm publish && git push && git push --tags"
+		"upload": "npm run build && npm version patch && node ./setupPackage.js && cd dist && npm publish && git push && git push --tags"
 	},
 	"author": "Minhyeong Park",
 	"license": "ISC",
