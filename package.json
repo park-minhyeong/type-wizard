@@ -11,7 +11,7 @@
 		"publish": "npm run build && npm version patch && node ./setupPackage.js && cd dist && npm publish && git push && git push --tags"
 	},
 	"author": "Minhyeong Park",
-	"license": "ISC",
+	"license": "MIT",
 	"dependencies": {
 		"dotenv": "^16.5.0",
 		"nodemon": "^3.1.10",
