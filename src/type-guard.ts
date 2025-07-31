@@ -8,6 +8,7 @@ import { isArray, validateArray } from './guard/array';
 import { isObject, validateObject } from './guard/object';
 import { isValidEnum, validateEnum } from './guard/enum';
 import { isDate, isDateString, validateDate } from './guard/date';
+import { isJson, validateJson } from './guard/json';
 
 
 
@@ -92,6 +93,35 @@ function validateTypeMessage(val: unknown, desc: TypeDescriptor, path: string, i
 		case 'date':
 			return validateDate(val, path, i18n);
 
+		case 'json':
+			const jsonError = validateJson(val, path, i18n);
+			if (jsonError) return jsonError;
+			
+			// of 속성이 있으면 추가 검증
+			if (desc.of) {
+				if (typeof desc.of === 'function') {
+					if (!desc.of(val)) {
+						return i18n.translate('error.type.json.expected', { 
+							property: path, 
+							type: 'invalid structure',
+							details: '커스텀 검증 함수를 통과하지 못했습니다'
+						});
+					}
+				} else if (typeof desc.of === 'object') {
+					// JSON 객체의 경우 내부 구조 검증
+					if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
+						// 각 필드에 대해 검증
+						for (const [key, fieldDesc] of Object.entries(desc.of)) {
+							if (Object.prototype.hasOwnProperty.call(val, key)) {
+								const fieldError = validateTypeMessage((val as any)[key], fieldDesc, `${path}.${key}`, i18n);
+								if (fieldError) return fieldError;
+							}
+						}
+					}
+				}
+			}
+			return null;
+
 		case 'object':
 			const objectError = validateObject(val, path, desc.of, i18n);
 			if (objectError) return objectError;
@@ -145,6 +175,28 @@ function validateType(val: unknown, desc: TypeDescriptor): boolean {
 
 		case 'date':
 			return isDate(val) || isDateString(val);
+
+		case 'json':
+			if (!isJson(val)) return false;
+			
+			// of 속성이 있으면 추가 검증
+			if (desc.of) {
+				if (typeof desc.of === 'function') {
+					return desc.of(val);
+				} else if (typeof desc.of === 'object') {
+					// JSON 객체의 경우 내부 구조 검증
+					if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
+						for (const [key, fieldDesc] of Object.entries(desc.of)) {
+							if (Object.prototype.hasOwnProperty.call(val, key)) {
+								if (!validateType((val as any)[key], fieldDesc)) {
+									return false;
+								}
+							}
+						}
+					}
+				}
+			}
+			return true;
 
 		case 'object':
 			if (!isObject(val) || Array.isArray(val)) return false;

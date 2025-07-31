@@ -14,5 +14,6 @@ export const koMessages: Record<MessageKey, string> = {
 	'error.type.object.expected': '${property}: 객체여야 합니다',
 	'error.type.array.expected': '${property}: 배열이어야 합니다',
 	'error.type.array.item_invalid': '${property}: 유효하지 않은 배열 요소입니다 (${type})',
-	'error.type.enum.not_allowed': '${property}: \'${value}\' 값은 허용되지 않습니다 (허용: ${allowed})'
+	'error.type.enum.not_allowed': '${property}: \'${value}\' 값은 허용되지 않습니다 (허용: ${allowed})',
+	'error.type.json.expected': '${property}: JSON 객체 또는 배열이어야 합니다'
 };

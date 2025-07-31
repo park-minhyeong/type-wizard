@@ -33,6 +33,12 @@ export type TypeDescriptor =
       optional?: boolean;
       nullable?: boolean;
       of: TypeDescriptor | ((v: unknown) => boolean);
+    }
+  | {
+      type: "json";
+      optional?: boolean;
+      nullable?: boolean;
+      of?: TypeDescriptor | ((v: unknown) => boolean);
     };
 
 export interface TypeGuard<T> {

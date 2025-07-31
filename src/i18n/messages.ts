@@ -12,7 +12,8 @@ export type MessageKey =
 	| 'error.type.object.expected'
 	| 'error.type.array.expected'
 	| 'error.type.array.item_invalid'
-	| 'error.type.enum.not_allowed';
+	| 'error.type.enum.not_allowed'
+	| 'error.type.json.expected';
 
 export type MessageParams = Record<string, string | number | boolean | undefined>;
 
@@ -34,7 +35,8 @@ export const defaultMessages: Record<MessageKey, string> = {
 	'error.type.object.expected': '${property}: expected object',
 	'error.type.array.expected': '${property}: expected array',
 	'error.type.array.item_invalid': '${property}: invalid array item, got ${type}',
-	'error.type.enum.not_allowed': '${property}: value \'${value}\' is not allowed (allowed: ${allowed})'
+	'error.type.enum.not_allowed': '${property}: value \'${value}\' is not allowed (allowed: ${allowed})',
+	'error.type.json.expected': '${property}: expected JSON object or array, got ${type}'
 };
 
 export class DefaultI18nProvider implements I18nProvider {
@@ -44,9 +46,16 @@ export class DefaultI18nProvider implements I18nProvider {
 		const template = this.messages[key];
 		if (!template) return key;
 
-		return template.replace(/\${(\w+)}/g, (_, param) => {
+		let result = template.replace(/\${(\w+)}/g, (_, param) => {
 			return params?.[param]?.toString() ?? param;
 		});
+
+		// details 파라미터가 있으면 추가
+		if (params?.details) {
+			result += ` - ${params.details}`;
+		}
+
+		return result;
 	}
 }
 
